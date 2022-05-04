@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" charset="utf-8">
+<title>HSK1-3級　単語カード</title>
+<!--<link rel="stylesheet" href="style.css">-->
+<style>
+h1{
+    margin:0;
+    font-size:1em;
+}
+#main{
+    max-width : 380px;
+    margin : auto;
+}
+#card{
+    width: 100%;
+    height: 200px;
+    user-select: none;
+    margin:5px;
+    position:relative;
+    font-family: 'SimSun';
+}
+#word_zh{
+    font-size: 60px;
+    text-align: center;
+    font-family: 'SimSun';
+}
+#word_ja{
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Arial';
+}
+#pinyin_area{
+    font-size: 20px;
+    font-family: 'Arial';
+    text-align: center;
+}
+.btn{
+    width : 80px;
+    height : 80px;
+    font-size:30px;
+    margin:5px;
+}
+.sbtn{
+    width : 60px;
+    height : 30px;
+    font-size:20px;
+    margin:5px;
+}
+#num{
+    width :60px;
+    height:30px;
+    font-size:20px;
+}
+.cover-btn{
+    width :40px;
+    height:200px;
+    position: absolute;
+    top:0;
+    text-align: center;
+    background-color:rgba(20,23,26,0.3);
+    cursor:pointer;
+    box-sizing: border-box;
+    padding-top: 85px;
+    padding-bottom: 85px;
+    font-size:26px;
+    /*line-height: 40px;*/
+    font-weight: 900;
+}
+#cover-next{
+    right:0;
+}
+#cover-back{
+    left:0;
+}
+/*
+@media screen and (max-width:480px) {
+    #main{
+        width : 100%;
+    }
+}
+*/
+</style>
+<script type="text/javascript" src="word.js"></script>
+</head>
+<body>
+    <div id="main">
+        <h1>HSK1-3級　単語カード</h1>
+        <!--<input type="checkbox" id="layer"><label for="layer" id="card">dummy</label>;-->
+   
+        <div>
+        <form onsubmit="return abc()" style="display: inline;">
+            No.<input type="tel" id="num"></input>
+            <!--<button onclick="jump();">jump</button>-->
+            <!--<input type="submit" class="sbtn" value="jump"></input>-->
+        </form>
+        <button class="sbtn" onclick="play_func();" style="float: right">play</button>
+    </div>
+        
+        <div id="card" onclick="change_layer();">
+            <div id="word_zh"></div>
+            <div id="word_ja"></div>
+            <div id="pinyin_area"></div> 
+            <div id="cover-back" class="cover-btn" onclick="back_card(event)"><</div>
+            <div id="cover-next" class="cover-btn" onclick="next_card(event)">></div>
+            <!--stopprogressっていうのを使うと重なった要素で最初に検知したイベントだけ実行できるとか-->
+        </div>
+
+        <!--<div>
+        <button class="btn" onclick="back_card(event)">back</button>
+        <button class="btn" onclick="next_card(event)" style="float: right">next</button>
+        </div>-->
+        <div>
+        <button class="btn" onclick="rand_card()" style="float: right">rand</button>
+        </div>
+    </div>
+</body>
+
+<script>
+var layer = 0;
+var i = 0;
+view_zh();
+
+function abc(){
+    jump();
+    return false;
+}
+
+function play_func(){
+	if ('speechSynthesis' in window) {
+        //console.log(speechSynthesis.getVoices().name);
+		const uttr = new SpeechSynthesisUtterance(word[i].zh);
+		uttr.rate = 0.5
+		uttr.lang = "zh-CN";
+        /*
+        var voice = speechSynthesis.getVoices().find(function(voice){
+            return voice.name === 'Microsoft Yunyang Online (Natural) - Chinese (Mainland)';
+        });
+
+        // 取得できた場合のみ適用する
+        if(voice){
+            uttr.voice = voice;
+        }
+        */
+
+		// 発言を再生 (発言キューに発言を追加)
+		speechSynthesis.speak(uttr);
+	}
+}
+function rand_card(){
+    i = Math.floor(Math.random() * word.length)
+    view_zh();
+}
+function next_card(e){
+    e.stopPropagation();
+    
+    if(layer == 1){
+        if(i < word.length){
+            i++;
+        }
+        else{
+            i = 0;
+        }
+        view_zh();
+    }
+    else{
+        view_ja();
+    }
+}
+function back_card(e){
+    e.stopPropagation();
+    if(i > 0){
+        i--;
+    }
+    else{
+        i = word.length-1;
+    }
+    view_zh();
+}
+
+function change_layer(){
+    if(layer == 1){
+        view_zh();
+    }
+    else if(layer == 0){
+        view_ja();
+    }
+}
+
+function jump(){
+    //console.log("detect jump");
+    var jump_num = document.getElementById("num").value;
+    if(jump_num <= word.length && jump_num > 0){
+        i = jump_num - 1;//配列は0から
+        view_zh();
+    }
+}
+
+function view_zh(){
+    layer = 0;
+    element = document.getElementById("num");
+    element.value = i + 1;//表示は1から
+    element = document.getElementById("word_zh");
+    element.innerHTML = word[i].zh;
+    element.style.display = "block";
+    element = document.getElementById("pinyin_area");
+    element.innerHTML = word[i].pinyin;
+    element.style.display = "block";
+    element = document.getElementById("word_ja");
+    element.style.display = "none";
+    //reset design
+    element = document.getElementById("card");
+    element.style.background = "gray";
+    element.style.color = "white";
+}
+
+function view_ja(){
+    layer = 1;
+    element = document.getElementById("num");
+    element.value = i + 1;//表示は1から
+    element = document.getElementById("word_ja");
+    element.innerHTML = "日訳：" + word[i].ja;
+    element.style.display = "block";
+    element = document.getElementById("pinyin_area");
+    element.style.display = "none";
+    element = document.getElementById("word_zh");
+    element.style.display = "none";
+    //reset design
+    element = document.getElementById("card");
+    element.style.background = "olive";
+    element.style.color = "white";
+}
+
+</script>
