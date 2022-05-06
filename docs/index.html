@@ -41,12 +41,14 @@ h1{
     height : 80px;
     font-size:30px;
     margin:5px;
+    -webkit-appearance: none;
 }
 .sbtn{
     width : 60px;
     height : 30px;
     font-size:20px;
     margin:5px;
+    -webkit-appearance: none;
 }
 #num{
     width :60px;
@@ -90,7 +92,7 @@ h1{
         <!--<input type="checkbox" id="layer"><label for="layer" id="card">dummy</label>;-->
    
         <div>
-        <form onsubmit="return abc()" style="display: inline;">
+        <form onsubmit="return jump()" style="display: inline;">
             No.<input type="tel" id="num"></input>
             <!--<button onclick="jump();">jump</button>-->
             <!--<input type="submit" class="sbtn" value="jump"></input>-->
@@ -122,13 +124,8 @@ var layer = 0;
 var i = 0;
 view_zh();
 
-function abc(){
-    jump();
-    return false;
-}
-
 function play_func(){
-	if ('speechSynthesis' in window) {
+    if ('speechSynthesis' in window) {
         //console.log(speechSynthesis.getVoices().name);
 		const uttr = new SpeechSynthesisUtterance(word[i].zh);
 		uttr.rate = 0.5
@@ -195,6 +192,8 @@ function jump(){
         i = jump_num - 1;//配列は0から
         view_zh();
     }
+
+    return false;//必須
 }
 
 function view_zh(){
