@@ -126,22 +126,10 @@ view_zh();
 
 function play_func(){
     if ('speechSynthesis' in window) {
-        //console.log(speechSynthesis.getVoices().name);
-		const uttr = new SpeechSynthesisUtterance(word[i].zh);
+		var uttr = new SpeechSynthesisUtterance(word[i].zh);
 		uttr.rate = 0.5
 		uttr.lang = "zh-CN";
-        /*
-        var voice = speechSynthesis.getVoices().find(function(voice){
-            return voice.name === 'Microsoft Yunyang Online (Natural) - Chinese (Mainland)';
-        });
-
-        // 取得できた場合のみ適用する
-        if(voice){
-            uttr.voice = voice;
-        }
-        */
-
-		// 発言を再生 (発言キューに発言を追加)
+      
 		speechSynthesis.speak(uttr);
 	}
 }
